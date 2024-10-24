@@ -1,0 +1,100 @@
+     while ($row1 = $resultado-> fetch_assoc()){
+       
+
+        //'.$row1['precio_venta_producto'].' <tr>
+                 //   <td style="border-bottom:0px; border-top:0px; border-left:0px; border-right:0px; text-align:center;">
+                //    <barcode code="'.$row1['codigo_producto'].'" type="CODABAR" class="barcode" size="0.9" disableborder="1" />
+               //     </td>|
+              //</tr> 
+            
+
+
+              $inicio=0;                
+              for ($i = 0; $i < $contador; $i++) {
+                        $inicio++;
+                $html.='  
+                <table style="border-collapse; " border="1" align="center" >
+                <thead>
+                    
+                    
+                    <tr>
+                        <td style="border-bottom:0px; border-top:0px; border-left:0px; border-right:0px; text-align:center;" >'.$row1['descripcion_producto'].'</td>  
+                    </tr>
+                    <tr>
+                        <td style="border-bottom:0px; border-top:0px; border-left:0px; border-right:0px; text-align:center;" > S/. '.$row1['precio_venta_producto'].'</td>  
+                    </tr>
+                    <tr>
+                        <td style="border-bottom:0px; border-top:0px; border-left:0px; border-right:0px; text-align:center;">
+                        <barcode code="'.$row1['codigo_producto'].'" type="C128A" size="0.9"  class="barcode"    >
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border-bottom:0px; border-top:0px; border-left:0px; border-right:0px; text-align:center;" >'.$row1['codigo_producto'].'</td>  
+                    </tr>
+                </thead>
+                </table>'; 
+           }
+             
+    
+    }
+
+
+
+
+
+
+
+
+
+
+*****************************
+
+
+
+
+$html = '<!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="utf-8">
+            <title>Example 1</title>
+            <link rel="stylesheet" href="style.css" media="all" />
+        </head>
+        <body>
+         
+            <table  style="border-collapse;" border="1"  >
+            <thead>
+                <tr>
+                    <th>id</th>
+                   
+                </tr>
+            </thead>
+            <tbody>
+                
+                ';
+                                $inicio=0;                
+                                   for ($i = 0; $i < $contador; $i++) {
+                                    $inicio++;
+
+                $html.='<tr >
+                   
+                        <td class="desc" style=" border-left:0px; border-bottom:0px; border-right:0px; text-align: center; ">'.$row1['descripcion_producto'].'
+                        <br> '.$row1['moneda'].'. '.$row1['precio_venta_producto'].'
+                        <br> <barcode code="'.$row1['codigo_producto'].'" type="C128A" size="0.9"  class="barcode"    >
+                        <br>'.$row1['codigo_producto'].' </td>   
+                  
+                        
+                    </tr>
+
+                    
+                   ';
+                }
+                $html.='
+                
+                <tbody>   
+            </table>
+         
+            <footer>
+
+            </footer>
+        </body>
+        </html>';

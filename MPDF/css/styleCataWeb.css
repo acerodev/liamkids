@@ -1,0 +1,27 @@
+.catalogo {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  
+  .tarjeta {
+    width: 23%; /* Ajusta el ancho según tus necesidades */
+    text-align: center;
+    border: 1px solid #ccc;
+    padding: 10px;
+    box-sizing: border-box;
+  }
+  
+  .tarjeta img {
+    width: 100%;
+    height: auto;
+  }
+  
+  .tarjeta h3 {
+    margin-top: 10px;
+  }
+  
+  .tarjeta p {
+    margin-top: 5px;
+  }
+  
