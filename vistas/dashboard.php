@@ -47,7 +47,7 @@
 
              <div class="col-lg-3">
                  <!-- small box -->
-                 <div class="small-box bg-warning">
+                 <div class="small-box bg-primary">
                      <div class="inner">
                          <h4 id="totalVentas">S./ 1,200.00</h4>
 
@@ -63,7 +63,7 @@
              <!-- TARJETA TOTAL GANANCIAS -->
              <div class="col-lg-2">
                  <!-- small box -->
-                 <div class="small-box bg-danger">
+                 <div class="small-box bg-warning">
                      <div class="inner">
                          <h4 id="totalGanancias">Sdd./ 470.00</h4>
 
@@ -79,7 +79,7 @@
              <!-- TARJETA PRODUCTOS POCO STOCK -->
              <div class="col-lg-2">
                  <!-- small box -->
-                 <div class="small-box bg-primary">
+                 <div class="small-box bg-danger">
                      <div class="inner">
                          <h4 id="totalProductosMinStock">15</h4>
 
@@ -95,7 +95,7 @@
              <!-- TARJETA TOTAL VENTAS DIA ACTUAL -->
              <div class="col-lg-3">
                  <!-- small box -->
-                 <div class="small-box bg-secondary">
+                 <div class="small-box bg-success">
                      <div class="inner">
                          <h4 id="totalVentasHoy">S./ 250.00</h4>
 
@@ -116,7 +116,7 @@
 
              <div class="col-12">
 
-                 <div class="card card-info shadow">
+                 <div class="card card-primary shadow">
 
                      <div class="card-header">
 
@@ -154,7 +154,7 @@
 
              <div class="col-12">
 
-                <div class="card card-warning shadow">
+                <div class="card card-primary shadow">
 
                     <div class="card-header">
 
@@ -196,7 +196,7 @@
              <!-- POR CATEGORIAS -->
              <div class="col-12">
 
-                 <div class="card card-success shadow">
+                 <div class="card card-info shadow">
 
                      <div class="card-header">
 
@@ -235,7 +235,7 @@
          <!-- Productos mas vendidos y con poco stock -->
          <div class="row">
              <div class="col-lg-6">
-                 <div class="card card-primary shadow">
+                 <div class="card card-warning shadow">
                      <div class="card-header">
                          <h3 class="card-title">LOS 10 PRODUCTOS MAS VENDIDOS</h3>
                          <div class="card-tools">
@@ -393,7 +393,7 @@
                      }, */
                      {
                          label: 'Ventas del Mes - ' + Number(date.getMonth()+1) + '/' + date.getFullYear(),
-                         backgroundColor: 'rgba(60,141,188,0.9)',
+                         backgroundColor: 'rgba(119, 182, 0, 0.8)',
                          data: total_abonos
                      }]
                  }
@@ -507,7 +507,7 @@
                     }, */
                     {
                         label: 'Compras del Mes - ' + Number(date.getMonth()+1) + '/' + date.getFullYear(),
-                        backgroundColor: 'rgba(255, 140, 0,0.9)',
+                        backgroundColor: 'rgba(255, 39, 0, 0.8)',
                         data: total_compra
                     }]
                 }

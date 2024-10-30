@@ -33,10 +33,11 @@ class VentasModelo{
     {
         $dbh = Conexion::conectar();
         $date = date('Y-m-d');
+        $datetime = date('Y-m-d H:i:s');
         try {
 
-        $stmt = $dbh->prepare("INSERT INTO venta_cabecera(nro_boleta,descripcion,total_venta,subtotal,igv, id_usuario, venta_estado, cliente_id, f_pago,f_pago_ope, compro_id, estado_caja, caja_id, monto_efectivo, monto_transfe, descuento, abonado)         
-                                                VALUES(:nro_boleta,:descripcion,:total_venta, :subtotal, :igv, :id_usuario,   IF(:f_pago = 'Credito', 'CREDITO', 'REGISTRADA'),  :cliente_id, :f_pago, :f_pago_ope, :compro_id, 'VIGENTE', :caja_id, :monto_efectivo, :monto_transfe, :descuento, '0')");
+        $stmt = $dbh->prepare("INSERT INTO venta_cabecera(nro_boleta,descripcion,total_venta,fecha_venta,subtotal,igv, id_usuario, venta_estado, cliente_id, f_pago,f_pago_ope, compro_id, estado_caja, caja_id, monto_efectivo, monto_transfe, descuento, abonado)         
+                                                VALUES(:nro_boleta,:descripcion,:total_venta,:fecha_venta, :subtotal, :igv, :id_usuario,   IF(:f_pago = 'Credito', 'CREDITO', 'REGISTRADA'),  :cliente_id, :f_pago, :f_pago_ope, :compro_id, 'VIGENTE', :caja_id, :monto_efectivo, :monto_transfe, :descuento, '0')");
 
 
         $dbh->beginTransaction();
@@ -55,6 +56,7 @@ class VentasModelo{
             ':caja_id' => $caja_id,
             ':monto_efectivo' => $monto_efectivo,
             ':monto_transfe' => $monto_transfe,
+            ':fecha_venta' => $datetime,
              ':descuento' => $descuento
 
           

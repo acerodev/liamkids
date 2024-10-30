@@ -138,21 +138,14 @@ $html.='
 	            <td  style="text-align:right;">    </td>
           </tr>
           
-          <tr>
-            <td colspan="4" style="text-align:right;font-size:13px">GRAVADAS:</td>
-            <td style="text-align:left;font-size:13px">'.$row1['moneda'].' '.number_format ((float)$row1['subtotal'] , 2, '.', '').'</td>
-          </tr>
-          <tr> 
-            <td colspan="4" style="text-align:right;font-size:13px">I.G.V:</td>
-            <td style="text-align:left;font-size:13px">'.$row1['moneda'].' '.number_format ((float)$row1['igv'] , 2, '.', '').'</td>
-          </tr>
+          
 		  <tr> 
-            <td colspan="4" style="text-align:right;font-size:13px">DESC.:</td>
-            <td style="text-align:left;font-size:13px">'.$row1['moneda'].' '.number_format ((float)$row1['descuento'] , 2, '.', '').'</td>
+            <td colspan="4" style="text-align:right;font-size:17px">DESC.:</td>
+            <td style="text-align:left;font-size:17px">'.$row1['moneda'].' '.number_format ((float)$row1['descuento'] , 2, '.', '').'</td>
           </tr>
           <tr>
-            <td colspan="4" style="text-align:right;font-size:13px"><b>TOTAL:</b></td>
-	        <td  style="text-align:left;font-size:13px"><b>'.$row1['moneda'].' '.number_format ((float)$row1['total_venta'], 2, '.', '').'</b></td>
+            <td colspan="4" style="text-align:right;font-size:17px"><b>TOTAL:</b></td>
+	        <td  style="text-align:left;font-size:17px"><b>'.$row1['moneda'].' '.number_format ((float)$row1['total_venta'], 2, '.', '').'</b></td>
           </tr>
           ';
        

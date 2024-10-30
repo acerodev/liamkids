@@ -28,7 +28,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>SIST-ROPA</title>
+    <title>SISTEMA-VENTA-ROPA</title>
 
     <!-- <link rel="shortcut icon" href="vistas/assets/dist/img/AdminLTELogo.png" type="image/x-icon"> -->
     <link rel="shortcut icon" href="vistas/assets/imagenes/empresa/<?php echo $nombre_sist[0]['imagen'] ; ?>" type="image/x-icon">

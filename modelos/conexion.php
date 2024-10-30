@@ -14,8 +14,10 @@ class Conexion{
     }
 
     static public  function ruta(){
-        return "http://192.168.100.120/sisropa/";
+        return "http://192.168.100.120/liamkids/";
     }
 
     
 }
+
+date_default_timezone_set('America/Lima');

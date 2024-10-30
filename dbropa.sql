@@ -1195,13 +1195,13 @@ SELECT DATE(cc.fecha) as fecha_compra,
 		SUM(ROUND(cc.total_compra,2)) as total_compra,
         (SELECT SUM(ROUND(cc1.total_compra,2))
 			FROM compra_cabecera cc1
-		where DATE(cc1.fecha) >= DATE(last_day(now() - INTERVAL 2 month) + INTERVAL 1 day)
-		and DATE(cc1.fecha) <= last_day(last_day(now() - INTERVAL 2 month) + INTERVAL 1 day)
+		where DATE(cc1.fecha) >= DATE(last_day(CONVERT_TZ(NOW(),'SYSTEM','-05:00') - INTERVAL 2 month) + INTERVAL 1 day)
+		and DATE(cc1.fecha) <= last_day(last_day(CONVERT_TZ(NOW(),'SYSTEM','-05:00') - INTERVAL 2 month) + INTERVAL 1 day)
       -- and DATE(cc1.fecha_comprobante) = DATE_ADD(cc1.fecha_comprobante, INTERVAL -1 MONTH)
 		group by DATE(cc1.fecha)) as total_compra_ant
 FROM compra_cabecera cc
-where DATE(cc.fecha) >= DATE(last_day(now() - INTERVAL 1 month) + INTERVAL 1 day)
-and DATE(cc.fecha) <= last_day(DATE(CURRENT_DATE))
+where DATE(cc.fecha) >= DATE(last_day(CONVERT_TZ(NOW(),'SYSTEM','-05:00') - INTERVAL 1 month) + INTERVAL 1 day)
+and DATE(cc.fecha) <= last_day(DATE(CONVERT_TZ(NOW(),'SYSTEM','-05:00')))
 and cc.compra_estado = 'REGISTRADA'
 group by DATE(cc.fecha);
 
@@ -1235,18 +1235,18 @@ BEGIN
 	
   SET totalCompras = (SELECT SUM(p.costo_total_producto) FROM productos p);
 
-  SET totalVentas = (SELECT SUM(vc.total_venta) FROM venta_cabecera vc where vc.venta_estado = 'REGISTRADA' AND MONTH(vc.fecha_venta) = MONTH(CURDATE()) AND YEAR(vc.fecha_venta) = YEAR(CURDATE()) );
+  SET totalVentas = (SELECT SUM(vc.total_venta) FROM venta_cabecera vc where vc.venta_estado = 'REGISTRADA' AND MONTH(vc.fecha_venta) = MONTH(DATE(CONVERT_TZ(NOW(),'SYSTEM','-05:00'))) AND YEAR(vc.fecha_venta) = YEAR(DATE(CONVERT_TZ(NOW(),'SYSTEM','-05:00'))) );
 	
-	SET totalabonos = (SELECT IFNULL(SUM(vc.monto),0) FROM venta_credito vc where  MONTH(vc.fecha_pago) = MONTH(CURDATE()) AND YEAR(vc.fecha_pago) = YEAR(CURDATE()) );
+	SET totalabonos = (SELECT IFNULL(SUM(vc.monto),0) FROM venta_credito vc where  MONTH(vc.fecha_pago) = MONTH(DATE(CONVERT_TZ(NOW(),'SYSTEM','-05:00'))) AND YEAR(vc.fecha_pago) = YEAR(DATE(CONVERT_TZ(NOW(),'SYSTEM','-05:00'))) );
 	
 	SET ventasycreditos = ( totalVentas + totalabonos );
 
-  SET ganancias = (SELECT SUM(vd.cantidad * vd.precio_ofertas) - SUM(vd.cantidad * vd.costo_unitario_venta) FROM venta_detalle vd where vd.venta_estado = 'REGISTRADA');
+  SET ganancias = (SELECT SUM(vd.cantidad * vd.precio_ofertas) - SUM(vd.cantidad * vd.costo_unitario_venta) - SUM(vd.vd_descuento) FROM venta_detalle vd where vd.venta_estado = 'REGISTRADA');
 	
   SET productosPocoStock = (SELECT COUNT(*) FROM productos p WHERE p.stock_producto <= p.minimo_stock_producto);
 	
-  SET ventasHoy = (SELECT SUM(vc.total_venta)  FROM venta_cabecera vc WHERE vc.venta_estado = 'REGISTRADA' AND DATE(vc.fecha_venta) = CURDATE());
-	SET totalabonoshoy = (SELECT IFNULL(SUM(vc.monto),0) FROM venta_credito vc where  DATE(vc.fecha_pago)  = CURDATE() );
+  SET ventasHoy = (SELECT SUM(vc.total_venta)  FROM venta_cabecera vc WHERE vc.venta_estado = 'REGISTRADA' AND DATE(vc.fecha_venta) = DATE(CONVERT_TZ(NOW(),'SYSTEM','-05:00')));
+	SET totalabonoshoy = (SELECT IFNULL(SUM(vc.monto),0) FROM venta_credito vc where  DATE(vc.fecha_pago)  = DATE(CONVERT_TZ(NOW(),'SYSTEM','-05:00')) );
 	
 	SET totalabonoshoysuma = ( ventasHoy + totalabonoshoy );
 
@@ -1294,7 +1294,7 @@ DECLARE tabono FLOAT;
 DECLARE tot_suma FLOAT;
 
 -- ventas del mes
-SET tvent = (SELECT sum(round(vc.total_venta,2))   FROM venta_cabecera vc WHERE  MONTH(vc.fecha_venta) = MONTH(CURDATE()) AND YEAR(vc.fecha_venta) = YEAR(CURDATE()) AND  vc.venta_estado = 'REGISTRADA'); 
+SET tvent = (SELECT sum(round(vc.total_venta,2))   FROM venta_cabecera vc WHERE  MONTH(vc.fecha_venta) = MONTH(DATE(CONVERT_TZ(NOW(),'SYSTEM','-05:00'))) AND YEAR(vc.fecha_venta) = YEAR(DATE(CONVERT_TZ(NOW(),'SYSTEM','-05:00'))) AND  vc.venta_estado = 'REGISTRADA'); 
 
 
 -- ventas del mes anterior
@@ -1302,7 +1302,7 @@ SET tvent_ant = (SELECT sum(round(vc.total_venta,2))   FROM venta_cabecera vc WH
 
 
 -- abonos del mes
-SET tabono = (SELECT SUM(cr.monto) FROM venta_credito cr where MONTH(cr.fecha_pago) = MONTH(CURDATE()) AND YEAR(cr.fecha_pago) = YEAR(CURDATE()));
+SET tabono = (SELECT SUM(cr.monto) FROM venta_credito cr where MONTH(cr.fecha_pago) = MONTH(DATE(CONVERT_TZ(NOW(),'SYSTEM','-05:00'))) AND YEAR(cr.fecha_pago) = YEAR(DATE(CONVERT_TZ(NOW(),'SYSTEM','-05:00'))));
 
 SET tot_suma = ( tvent +  tabono );
  
@@ -1334,8 +1334,8 @@ SELECT date(vc.fecha_venta) as fecha_venta,
 		sum(round(vc.total_venta,2)) as total_venta,
         sum(round(vc.total_venta,2)) as total_venta_ant
 FROM venta_cabecera vc
-where date(vc.fecha_venta) >= date(last_day(now() - INTERVAL 2 month) + INTERVAL 1 day)
-and date(vc.fecha_venta) <= last_day(last_day(now() - INTERVAL 2 month) + INTERVAL 1 day)
+where date(vc.fecha_venta) >= date(last_day(CONVERT_TZ(NOW(),'SYSTEM','-05:00') - INTERVAL 2 month) + INTERVAL 1 day)
+and date(vc.fecha_venta) <= last_day(last_day(CONVERT_TZ(NOW(),'SYSTEM','-05:00') - INTERVAL 2 month) + INTERVAL 1 day)
 group by date(vc.fecha_venta);
 END
 ;;
@@ -1357,7 +1357,7 @@ FROM productos p
 WHERE p.codigo_producto  = p_codigo_producto;
     
 INSERT INTO compra_detalle(nro_compra,   codigo_producto,   cantidad,   costo_unitario,       total,        estado,         id_talla,   fecha) 
-									VALUES(p_nro_compra, p_codigo_producto, p_cantidad,   p_precio_compra,   p_total_compra,  'REGISTRADA',  p_talla,     curdate());
+									VALUES(p_nro_compra, p_codigo_producto, p_cantidad,   p_precio_compra,   p_total_compra,  'REGISTRADA',  p_talla,     DATE(CONVERT_TZ(NOW(),'SYSTEM','-05:00')));
                                                         
 END
 ;;
@@ -1379,7 +1379,7 @@ FROM productos p
 WHERE p.codigo_producto  = p_codigo_producto;
     
 INSERT INTO coti_detalle(nro_boleta,codigo_producto, cantidad, costo_unitario_venta,precio_unitario_venta,total_venta, fecha_venta, venta_estado, precio_ofertas, id_talla) 
-VALUES(p_nro_boleta,p_codigo_producto, p_cantidad, v_precio_compra, v_precio_venta, p_total_venta, curdate(), 'REGISTRADA', p_precio_oferta, p_talla);
+VALUES(p_nro_boleta,p_codigo_producto, p_cantidad, v_precio_compra, v_precio_venta, p_total_venta, DATE(CONVERT_TZ(NOW(),'SYSTEM','-05:00')), 'REGISTRADA', p_precio_oferta, p_talla);
                                                         
 END
 ;;
@@ -1434,7 +1434,7 @@ BEGIN
                         ex_costo_unitario,
                         ex_costo_total)
 				VALUES(p_codigo_producto,
-												CURDATE(),
+												DATE(CONVERT_TZ(NOW(),'SYSTEM','-05:00')),
                         p_concepto,
                         '',
 												v_cant_u,
@@ -1446,7 +1446,7 @@ BEGIN
                         v_costo_total_ex);
 												
 		INSERT INTO kardex2 (codigo_producto ,  kardex_fecha,   kardex_tipo,    kardex_ingreso,    kardex_p_ingreso,       kardex_total) 
-		values             (p_codigo_producto, CURDATE(),     p_concepto,        v_cant_u,           v_costo_unitario_ex,       v_unidades_ex);
+		values             (p_codigo_producto, DATE(CONVERT_TZ(NOW(),'SYSTEM','-05:00')),     p_concepto,        v_cant_u,           v_costo_unitario_ex,       v_unidades_ex);
 
 
 
@@ -1525,7 +1525,7 @@ BEGIN
                         v_costo_total_ex);
 												
 		INSERT INTO kardex2 (codigo_producto ,   kardex_fecha, kardex_tipo,  kardex_ingreso,    kardex_p_ingreso,      kardex_total,      venta_comprobante) 
-		values               (p_codigo_producto, CURDATE(),     p_concepto,  v_unidades_out,   v_costo_unitario_ex,   v_unidades_ex,   p_comprobante);
+		values               (p_codigo_producto, DATE(CONVERT_TZ(NOW(),'SYSTEM','-05:00')),     p_concepto,  v_unidades_out,   v_costo_unitario_ex,   v_unidades_ex,   p_comprobante);
 
 	 
 	UPDATE productos 
@@ -1554,10 +1554,10 @@ delimiter ;;
 CREATE PROCEDURE `prc_registrar_kardex_existencias`(IN `p_codigo_producto` VARCHAR(25), IN `p_concepto` VARCHAR(100), IN `p_comprobante` VARCHAR(100), IN `p_unidades` FLOAT, IN `p_costo_unitario` FLOAT, IN `p_costo_total` FLOAT)
 BEGIN
   INSERT INTO kardex (codigo_producto, fecha, concepto, comprobante, ex_unidades, ex_costo_unitario, ex_costo_total)
-    VALUES (p_codigo_producto, CURRENT_TIME(), p_concepto, p_comprobante, p_unidades, p_costo_unitario, p_costo_total);
+    VALUES (p_codigo_producto, TIME(CONVERT_TZ(NOW(),'SYSTEM','-05:00')), p_concepto, p_comprobante, p_unidades, p_costo_unitario, p_costo_total);
 		
 		INSERT INTO kardex2 (codigo_producto ,kardex_fecha, kardex_tipo, venta_comprobante, kardex_ingreso, kardex_p_ingreso, kardex_total) 
-		values (p_codigo_producto, CURDATE(),p_concepto,  p_comprobante, p_unidades, p_costo_unitario, p_unidades);
+		values (p_codigo_producto, DATE(CONVERT_TZ(NOW(),'SYSTEM','-05:00')),p_concepto,  p_comprobante, p_unidades, p_costo_unitario, p_unidades);
 
 END
 ;;
@@ -1612,7 +1612,7 @@ BEGIN
                         ex_costo_unitario,
                         ex_costo_total)
 				VALUES(p_codigo_producto,
-						curdate(),
+						DATE(CONVERT_TZ(NOW(),'SYSTEM','-05:00')),
                         p_concepto,
                         '',
                         v_unidades_out,
@@ -1624,7 +1624,7 @@ BEGIN
                         v_costo_total_ex);
 												
 			INSERT INTO kardex2 (codigo_producto ,kardex_fecha, kardex_tipo, kardex_salida, kardex_p_salida, kardex_total) 
-		values (p_codigo_producto, CURDATE(),p_concepto, v_cant_u, v_costo_unitario_ex, v_unidades_ex);
+		values (p_codigo_producto, DATE(CONVERT_TZ(NOW(),'SYSTEM','-05:00')),p_concepto, v_cant_u, v_costo_unitario_ex, v_unidades_ex);
 
 
 	UPDATE productos 
@@ -1721,7 +1721,7 @@ BEGIN
                         v_costo_total_ex);
 												
 		INSERT INTO kardex2 (codigo_producto ,   kardex_fecha, kardex_tipo,  kardex_salida,    kardex_p_salida,      kardex_total,      venta_comprobante) 
-		values               (p_codigo_producto, CURDATE(),     p_concepto,  v_unidades_out,   v_costo_unitario_ex,   v_unidades_ex,   p_comprobante);
+		values               (p_codigo_producto, DATE(CONVERT_TZ(NOW(),'SYSTEM','-05:00')),     p_concepto,  v_unidades_out,   v_costo_unitario_ex,   v_unidades_ex,   p_comprobante);
 		
 		UPDATE venta_detalle SET
 		costo_unitario_venta = PRECIOCOMPRA, 
@@ -1769,7 +1769,7 @@ FROM productos p
 WHERE p.codigo_producto  = p_codigo_producto;*/
     
 INSERT INTO venta_detalle(nro_boleta,codigo_producto, cantidad, costo_unitario_venta,precio_unitario_venta,total_venta, fecha_venta, venta_estado, precio_ofertas, id_talla, vd_descuento) 
-VALUES(p_nro_boleta,p_codigo_producto, p_cantidad, PRECIOCOMPRA, PRECIOVENTA, p_total_venta, curdate(), 'REGISTRADA', p_precio_oferta, p_talla, p_descuento);
+VALUES(p_nro_boleta,p_codigo_producto, p_cantidad, PRECIOCOMPRA, PRECIOVENTA, p_total_venta, DATE(CONVERT_TZ(NOW(),'SYSTEM','-05:00')), 'REGISTRADA', p_precio_oferta, p_talla, p_descuento);
                                                         
 END
 ;;
@@ -2526,7 +2526,7 @@ BEGIN
 
     -- Insertar el pago en la tabla venta_credito
     INSERT INTO venta_credito (nro_boleta, monto, fecha_pago, estado, caja_estado, caja_id)
-    VALUE(p_nro_bol, p_monto, CURRENT_TIMESTAMP(), 'PAGADO', 'VIGENTE', p_caja_id);
+    VALUE(p_nro_bol, p_monto, CONVERT_TZ(CURRENT_TIMESTAMP(),'SYSTEM','-05:00'), 'PAGADO', 'VIGENTE', p_caja_id);
     
     -- Actualizar el campo abonado de la tabla venta_cabecera
     UPDATE venta_cabecera
@@ -2556,7 +2556,7 @@ BEGIN
 DECLARE CANTIDAD INT;
 SET @CANTIDAD:=(SELECT COUNT(*) FROM caja where caja_estado='VIGENTE');
 if @CANTIDAD = 0 THEN
-	INSERT INTO caja (caja_descripcion, caja_monto_inicial, caja_f_apertura, caja_estado, caja_hora_apertura) VALUES(DESCRIPCION, MONTO_INI, CURDATE(), 'VIGENTE', CURRENT_TIME());
+	INSERT INTO caja (caja_descripcion, caja_monto_inicial, caja_f_apertura, caja_estado, caja_hora_apertura) VALUES(DESCRIPCION, MONTO_INI, DATE(CONVERT_TZ(NOW(),'SYSTEM','-05:00')), 'VIGENTE', TIME(CONVERT_TZ(NOW(),'SYSTEM','-05:00')));
 SELECT 1;
 ELSE
 SELECT 2;
@@ -2578,10 +2578,10 @@ BEGIN
 			caja_count_ingreso = CANT_INGRES,
 			caja__monto_egreso = MONTO_EGRES,
 			caja_count_egreso = CANT_EGRESO,
-		caja_f_cierre = CURDATE(),
+		caja_f_cierre = DATE(CONVERT_TZ(NOW(),'SYSTEM','-05:00')),
 		caja_monto_total = MONTO_TOTAL,
 		caja_estado = 'CERRADO',
-		caja_hora_cierre = CURRENT_TIME(),
+		caja_hora_cierre = TIME(CONVERT_TZ(NOW(),'SYSTEM','-05:00')),
 		caja_monto_ing_directo = MONTO_I_DIREC,
 		caja_monto_egre_directo = MONTO_E_DIREC,
 		caja_abonos = MONTO_ABON,
@@ -2897,8 +2897,8 @@ SELECT
 		SUM(dv.cantidad) as cantida_vendidos,
 	MAX(dv.precio_unitario_venta) as precio_venta,
 	p.precio_compra_producto as precio_compra, 
-	(MAX(dv.precio_unitario_venta) - p.precio_compra_producto  ) as utilidad,
-	 SUM((dv.precio_unitario_venta - p.precio_compra_producto  - dv.vd_descuento) * dv.cantidad) as suma_total
+	ROUND((MAX(dv.precio_unitario_venta) - p.precio_compra_producto),4) as utilidad,
+	 ROUND(SUM(((dv.precio_unitario_venta - p.precio_compra_producto) * dv.cantidad) - dv.vd_descuento),4) as suma_total
 FROM
 	productos p
 	INNER JOIN
@@ -3284,3 +3284,4 @@ END
 delimiter ;
 
 SET FOREIGN_KEY_CHECKS = 1;
+
